@@ -1,0 +1,42 @@
+# Node / frontend artifacts
+frontend/node_modules/
+frontend/.next/
+frontend/.turbo/
+frontend/.swc/
+
+# Python / backend artifacts
+backend/.venv/
+backend/__pycache__/
+backend/**/*.pyc
+backend/.mypy_cache/
+
+# Env files
+frontend/.env
+frontend/.env.local
+frontend/.env.*
+backend/.env
+backend/.env.*
+
+# OS noise
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor settings
+.vscode/
+.idea/
+*.code-workspace
+
+# Coverage / reports
+coverage/
+.nyc_output/
+pytest_cache/
+
+# Supabase / misc
+supabase/.branches
+supabase/.temp
