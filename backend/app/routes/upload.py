@@ -6,6 +6,7 @@ from supabase import Client
 from ..db import get_supabase_client
 from ..schemas import UploadRequest, UploadResponse
 from ..utils.auth import get_current_user, get_user_id
+from ..utils.usage import get_plan_and_usage, increment_upload
 
 router = APIRouter(prefix='/upload', tags=['upload'])
 
@@ -31,6 +32,11 @@ async def upload_note(
 
     user_id = get_user_id(user)
 
+    # Usage enforcement for free plan
+    plan, uploads, _gens = get_plan_and_usage(supabase, user_id)
+    if plan == 'free' and uploads >= 3:
+        raise HTTPException(status_code=402, detail='Free plan allows up to 3 uploads per month.')
+
     insert_payload = {
         'content': payload.note_text,
         'filename': payload.file_name,
@@ -45,4 +51,6 @@ async def upload_note(
     if note_id is None:
         raise HTTPException(status_code=500, detail='Failed to persist note.')
 
+    # Update usage counter
+    increment_upload(supabase, user_id)
     return UploadResponse(note_id=str(note_id), size=len(encoded))

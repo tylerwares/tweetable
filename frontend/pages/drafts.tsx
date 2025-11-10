@@ -13,10 +13,14 @@ type Draft = {
 
 const DraftsPage = () => {
   const supabase = useSupabase();
-  const { session } = useAuth();
+  const { session, loading: authLoading } = useAuth();
   const [drafts, setDrafts] = useState<Draft[]>([]);
 
   useEffect(() => {
+    if (!authLoading && !session) {
+      window.location.replace('/login');
+      return;
+    }
     const loadDrafts = async () => {
       if (!supabase || !session) {
         return;
@@ -30,7 +34,7 @@ const DraftsPage = () => {
     };
 
     void loadDrafts();
-  }, [supabase, session]);
+  }, [supabase, session, authLoading]);
 
   return (
     <main className="min-h-screen bg-slate-950 px-4 pb-16 pt-12 text-slate-100">

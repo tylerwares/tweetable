@@ -17,6 +17,11 @@ class Settings(BaseModel):
     openai_model: str = Field(default_factory=lambda: getenv('OPENAI_MODEL', 'gpt-4o-mini'))
     frontend_origin: str = Field(default_factory=lambda: getenv('FRONTEND_ORIGIN', 'http://localhost:3000'))
     rate_limit_generate: str = Field(default_factory=lambda: getenv('RATE_LIMIT_GENERATE', '25/minute'))
+    # Stripe
+    stripe_secret_key: str = Field(default_factory=lambda: getenv('STRIPE_SECRET_KEY', ''))
+    stripe_price_id: str = Field(default_factory=lambda: getenv('STRIPE_PRICE_ID', ''))
+    stripe_webhook_secret: str = Field(default_factory=lambda: getenv('STRIPE_WEBHOOK_SECRET', ''))
+    frontend_url: str = Field(default_factory=lambda: getenv('FRONTEND_URL', ''))
 
 
 @lru_cache

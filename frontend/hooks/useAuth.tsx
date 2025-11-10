@@ -47,11 +47,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (!supabase) {
       throw new Error('Supabase is not configured yet.');
     }
-
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? window.location.origin;
     await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: `${window.location.origin}/app`
+        emailRedirectTo: `${siteUrl}/app`
       }
     });
   };

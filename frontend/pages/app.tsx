@@ -34,6 +34,13 @@ const AppPage = () => {
   const supabase = useSupabase();
   const { session, loading: authLoading } = useAuth();
 
+  // Redirect to /login if not authenticated
+  useEffect(() => {
+    if (!authLoading && !session) {
+      window.location.replace('/login');
+    }
+  }, [authLoading, session]);
+
   useEffect(() => {
     if (session && authMessage) {
       setAuthMessage(null);

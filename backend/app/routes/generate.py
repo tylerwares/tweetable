@@ -8,6 +8,7 @@ from ..db import get_supabase_client
 from ..schemas import GenerateRequest, GenerateResponse
 from ..services.openai_service import openai_service
 from ..utils.auth import get_current_user, get_user_id
+from ..utils.usage import get_plan_and_usage, increment_generation
 from ..utils.limiter import limiter
 
 router = APIRouter(prefix='/generate', tags=['generate'])
@@ -42,6 +43,13 @@ async def generate_drafts(
             detail='Provide note text via prompt or note_id.'
         )
 
+    # Enforce plan limits
+    user_id = get_user_id(user)
+    if user_id:
+        plan, _uploads, generations = get_plan_and_usage(supabase, user_id)
+        if plan == 'free' and generations >= 25:
+            raise HTTPException(status_code=402, detail='Free plan allows up to 25 generations per month.')
+
     result = await openai_service.generate_tweets(
         persona=payload.persona,
         persona_bio=payload.persona_bio,
@@ -51,5 +59,9 @@ async def generate_drafts(
     short = result.get('short_tweets', [])
     long = result.get('long_tweets', [])
     threads = result.get('threads', [])
+
+    # Update usage counter
+    if user_id:
+        increment_generation(supabase, user_id)
 
     return GenerateResponse(short_tweets=short, long_tweets=long, threads=threads)
