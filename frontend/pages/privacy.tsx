@@ -15,7 +15,7 @@ const PrivacyPolicyPage = () => {
             <p className="text-sm text-slate-400">Last updated: {new Date().toISOString().slice(0, 10)}</p>
           </header>
 
-          <section className="space-y-4">
+          <section className="space-y-6">
             <p>
               Tweetable (“we”, “our”, “us”) respects your privacy. This policy explains what
               information we collect, how we use it, and the choices you have.
@@ -46,6 +46,15 @@ const PrivacyPolicyPage = () => {
               <li>Monitor abuse and maintain security.</li>
             </ul>
 
+            <h2 className="text-xl font-semibold">Google OAuth disclosure</h2>
+            <p className="text-slate-300">
+              If you choose “Continue with Google,” we use Google Sign‑In solely for authentication
+              and account creation. We request basic profile information (name, email) through
+              standard OpenID scopes (<code className="px-1">openid</code>, <code className="px-1">email</code>,
+              <code className="px-1">profile</code>). We do not request sensitive or restricted Google
+              scopes, and we do not use your Google data for advertising.
+            </p>
+
             <h2 className="text-xl font-semibold">Data sharing</h2>
             <p className="text-slate-300">
               We share data with service providers solely to operate Tweetable:
@@ -57,6 +66,14 @@ const PrivacyPolicyPage = () => {
             <p className="text-slate-300">
               We retain account and draft data while your account is active. You can request data
               deletion by contacting us.
+            </p>
+
+            <h2 className="text-xl font-semibold">Data deletion</h2>
+            <p className="text-slate-300">
+              You may request deletion of your account and related data at any time by emailing
+              <span className="px-1 underline">support@tweetable.app</span> from your registered email. We’ll
+              confirm deletion within a reasonable timeframe. Subscription billing records may be
+              retained as required by law.
             </p>
 
             <h2 className="text-xl font-semibold">Your choices</h2>
@@ -82,4 +99,3 @@ const PrivacyPolicyPage = () => {
 };
 
 export default PrivacyPolicyPage;
-

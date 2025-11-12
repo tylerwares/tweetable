@@ -3,6 +3,7 @@ import Head from 'next/head';
 import { getSupabaseBrowserClient } from '@/utils/useSupabase';
 import { useAuth } from '@/hooks/useAuth';
 import Link from 'next/link';
+import Footer from '@/components/Footer';
 
 const LoginPage = () => {
   const supabase = getSupabaseBrowserClient();
@@ -119,9 +120,9 @@ const LoginPage = () => {
           </div>
         </div>
       </main>
+      <Footer />
     </>
   );
 };
 
 export default LoginPage;
-
