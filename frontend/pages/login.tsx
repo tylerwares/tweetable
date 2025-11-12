@@ -75,6 +75,9 @@ const LoginPage = () => {
 
             <form onSubmit={onSubmit} className="space-y-3">
               <input
+                id="auth-email"
+                name="email"
+                autoComplete="email"
                 type="email"
                 required
                 value={email}
@@ -83,6 +86,9 @@ const LoginPage = () => {
                 className="w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm"
               />
               <input
+                id="auth-password"
+                name="password"
+                autoComplete="current-password"
                 type="password"
                 required
                 minLength={6}

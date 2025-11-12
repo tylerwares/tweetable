@@ -41,6 +41,9 @@ const AuthModal = ({ isOpen, onClose, onRequestLink }: AuthModalProps) => {
           <label className="flex flex-col gap-2 text-sm text-slate-300">
             Email address
             <input
+              id="magic-email"
+              name="email"
+              autoComplete="email"
               type="email"
               required
               value={email}

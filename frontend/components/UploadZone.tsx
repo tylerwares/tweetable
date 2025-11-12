@@ -77,10 +77,12 @@ const UploadZone = ({ onUpload }: UploadZoneProps) => {
       >
         <span className="text-lg font-semibold text-slate-200">Upload or drop your notes</span>
         <span className="mt-2 text-sm text-slate-400">Supports .txt or .md up to 50 KB</span>
-        <input id="upload" type="file" accept=".txt,.md" className="hidden" onChange={onChange} />
+        <input id="upload" name="note-file" type="file" accept=".txt,.md" className="hidden" onChange={onChange} />
       </label>
 
       <textarea
+        id="note-text"
+        name="note-text"
         className="w-full rounded-md border border-slate-800 bg-slate-950 p-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-brand focus:outline-none"
         placeholder="Or paste your notes here..."
         rows={4}
