@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Literal, Optional
 
 from pydantic import BaseModel, Field, RootModel
 
@@ -51,3 +51,80 @@ class PersonaProfile(BaseModel):
     persona: str
     bio: Optional[str] = None
     preferences: Optional[dict] = None
+
+
+# ----- Multi-stage pipeline schemas -----
+
+
+class VoiceProfileResponse(BaseModel):
+    voice_profile: str
+    stylistic_quirks: List[str]
+    persona: str
+
+
+class IdeaItem(BaseModel):
+    title: str
+    summary: str
+    virality: int
+    relatability: int
+    emotional_punch: int
+
+
+class IdeasResponse(BaseModel):
+    ideas: List[IdeaItem]
+
+
+class InsightAngle(BaseModel):
+    idea_title: str
+    angle: str
+
+
+class InsightAnglesResponse(BaseModel):
+    angles: List[InsightAngle]
+
+
+class TweetOutput(BaseModel):
+    short_tweet: str
+    tweets: List[str]
+    threads: List[List[str]]
+
+
+class ShitpostResponse(BaseModel):
+    shitpost: str
+
+
+class PipelineRunRequest(BaseModel):
+    note_text: str
+    include_shitpost: bool = True
+    session_id: Optional[str] = None
+
+
+class PipelineRunResponse(BaseModel):
+    session_id: str
+    voice_profile: VoiceProfileResponse
+    ideas: IdeasResponse
+    angles: InsightAnglesResponse
+    tweets: TweetOutput
+    shitpost: Optional[ShitpostResponse] = None
+
+
+StageLiteral = Literal['voice', 'ideas', 'angles', 'tweets', 'shitpost']
+
+
+class PipelineStageRequest(BaseModel):
+    note_text: Optional[str] = None
+    voice_profile: Optional[VoiceProfileResponse] = None
+    ideas: Optional[IdeasResponse] = None
+    angles: Optional[InsightAnglesResponse] = None
+    include_shitpost: bool = True
+    session_id: Optional[str] = None
+
+
+class PipelineStageResponse(BaseModel):
+    stage: StageLiteral
+    session_id: str
+    voice_profile: Optional[VoiceProfileResponse] = None
+    ideas: Optional[IdeasResponse] = None
+    angles: Optional[InsightAnglesResponse] = None
+    tweets: Optional[TweetOutput] = None
+    shitpost: Optional[ShitpostResponse] = None
