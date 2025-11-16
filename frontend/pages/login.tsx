@@ -4,6 +4,7 @@ import { getSupabaseBrowserClient } from '@/utils/useSupabase';
 import { useAuth } from '@/hooks/useAuth';
 import Link from 'next/link';
 import Footer from '@/components/Footer';
+import NavBar from '@/components/NavBar';
 
 const LoginPage = () => {
   const supabase = getSupabaseBrowserClient();
@@ -49,8 +50,9 @@ const LoginPage = () => {
       <Head>
         <title>Login — Tweetable</title>
       </Head>
-      <main className="min-h-screen bg-slate-950 px-6 py-16 text-slate-100">
-        <div className="mx-auto w-full max-w-md">
+      <main className="min-h-screen bg-slate-950 text-slate-100">
+        <NavBar />
+        <div className="mx-auto w-full max-w-md px-6 py-16">
           <h1 className="text-3xl font-semibold">Welcome to Tweetable</h1>
           <p className="mt-2 text-sm text-slate-400">Sign in to generate and save drafts.</p>
 

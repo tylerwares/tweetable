@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .config import get_settings
-from .routes import auth, billing, drafts, generate, persona, pipeline, upload
+from .routes import auth, billing, drafts, generate, persona, pipeline, tone, playground, upload
 from .utils.limiter import register_limiter
 
 settings = get_settings()
@@ -26,6 +26,8 @@ app.include_router(persona.router)
 app.include_router(auth.router)
 app.include_router(billing.router)
 app.include_router(pipeline.router)
+app.include_router(tone.router)
+app.include_router(playground.router)
 
 
 @app.get('/health')

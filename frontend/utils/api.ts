@@ -2,7 +2,9 @@ import type {
   PipelineRunResponse,
   PipelineStageRequest,
   PipelineStageResponse,
-  StageLiteral
+  StageLiteral,
+  ToneGenerateResponse,
+  ToneProfile
 } from '@/types/pipeline';
 
 export const getApiBaseUrl = () =>
@@ -37,3 +39,13 @@ export const runPipeline = (
 
 export const regenerateStage = (stage: StageLiteral, data: PipelineStageRequest, token: string) =>
   postJson<PipelineStageRequest, PipelineStageResponse>(`/pipeline/stage/${stage}`, data, token);
+
+export const analyzeTone = (note_text: string, token: string) =>
+  postJson<{ note_text: string }, ToneProfile>('/tone/analyze', { note_text }, token);
+
+export const generateToneTweets = (note_text: string, tone: ToneProfile, token: string) =>
+  postJson<{ note_text: string; tone: ToneProfile }, ToneGenerateResponse>(
+    '/tone/generate',
+    { note_text, tone },
+    token
+  );

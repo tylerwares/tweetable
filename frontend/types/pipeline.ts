@@ -56,6 +56,21 @@ export interface PipelineStageResponse {
   shitpost?: ShitpostResponse;
 }
 
+export interface ToneProfile {
+  professional_casual: number;
+  polished_chaotic: number;
+  calm_enraged: number;
+  optimistic_cynical: number;
+  insightful_entertaining: number;
+  clean_profane: number;
+}
+
+export interface ToneGenerateResponse {
+  short_tweets: string[];
+  long_tweets: string[];
+  threads: string[][];
+}
+
 export interface PipelineStageRequest {
   note_text?: string;
   voice_profile?: VoiceProfile;
