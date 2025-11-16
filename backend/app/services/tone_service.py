@@ -76,6 +76,18 @@ Return JSON:
 """
 
 
+def _default_tone_payload() -> Dict[str, int]:
+    # Balanced defaults so the UI can still proceed if analysis fails.
+    return {
+        'professional_casual': 50,
+        'polished_chaotic': 50,
+        'calm_enraged': 50,
+        'optimistic_cynical': 50,
+        'insightful_entertaining': 50,
+        'clean_profane': 50,
+    }
+
+
 class ToneService:
     def __init__(self) -> None:
         settings = get_settings()
@@ -114,8 +126,15 @@ class ToneService:
             raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail='OpenAI response was not valid JSON') from exc
 
     async def analyze(self, text: str) -> ToneAnalysisResponse:
-        data = await self._call_json(VOICE_ANALYSIS_PROMPT.format(user_text=text))
-        return ToneAnalysisResponse.model_validate(data)
+        try:
+            data = await self._call_json(VOICE_ANALYSIS_PROMPT.format(user_text=text))
+            return ToneAnalysisResponse.model_validate(data)
+        except HTTPException:
+            # Bubble up meaningful HTTP errors.
+            raise
+        except Exception:
+            # Graceful fallback to keep UX moving if analysis fails.
+            return ToneAnalysisResponse.model_validate(_default_tone_payload())
 
     async def generate(self, payload: ToneGenerateRequest) -> ToneGenerateResponse:
         tone = payload.tone
@@ -128,8 +147,11 @@ class ToneService:
             insightful_entertaining=tone.insightful_entertaining,
             clean_profane=tone.clean_profane
         )
-        data = await self._call_json(prompt)
-        return ToneGenerateResponse.model_validate(data)
+        try:
+            data = await self._call_json(prompt)
+            return ToneGenerateResponse.model_validate(data)
+        except Exception as exc:
+            raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=f'Generation failed: {exc}') from exc
 
 
 tone_service = ToneService()

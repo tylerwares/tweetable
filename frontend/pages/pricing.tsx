@@ -7,9 +7,9 @@ const plans = [
     price: '$0/month',
     cta: 'Get started',
     features: [
-      '// TODO: list free plan limits (e.g., uploads/generations/drafts)',
-      'Core tweet generation',
-      'Access to tone sliders'
+      'Limited uploads and generations per month',
+      'Core tweet + thread generation',
+      'Tone sliders included'
     ]
   },
   {
@@ -17,9 +17,9 @@ const plans = [
     price: '$X/month',
     cta: 'Upgrade to Premium',
     features: [
-      '// TODO: list premium limits (e.g., unlimited generations/drafts)',
-      'Priority generation',
-      'Playground + advanced tweaks'
+      'Increased or unlimited generations',
+      'Priority processing',
+      'Full playground access and regen controls'
     ]
   }
 ];
@@ -30,7 +30,7 @@ const PricingPage = () => (
     <section className="mx-auto w-full max-w-5xl px-6 pb-20 pt-16 space-y-10">
       <div className="space-y-3">
         <h1 className="text-3xl font-semibold">Pricing</h1>
-        <p className="text-sm text-slate-400">// TODO: replace with concise pricing positioning.</p>
+        <p className="text-sm text-slate-400">Choose the plan that fits your publishing cadence. Upgrade when you need more horsepower.</p>
       </div>
       <div className="grid gap-4 md:grid-cols-2">
         {plans.map((plan) => (

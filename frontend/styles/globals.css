@@ -3,11 +3,14 @@
 @tailwind utilities;
 
 html {
-  @apply bg-slate-950 text-slate-100;
+  @apply text-slate-100;
+  background: radial-gradient(circle at 20% 20%, rgba(56, 189, 248, 0.1), transparent 25%),
+    radial-gradient(circle at 80% 0%, rgba(59, 130, 246, 0.1), transparent 25%),
+    #070b16;
 }
 
 body {
-  @apply min-h-screen bg-slate-950 text-slate-100 antialiased;
+  @apply min-h-screen bg-transparent text-slate-100 antialiased;
 }
 
 a {

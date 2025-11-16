@@ -2,10 +2,10 @@ import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';
 
 const features = [
-  { title: 'Voice-preserving generation', desc: '// TODO: describe how Tweetable keeps your authentic voice.' },
-  { title: 'Tone sliders', desc: '// TODO: mention the 6 sliders to fine-tune professionalism, energy, and vibe.' },
-  { title: 'Multiple formats', desc: '// TODO: short tweets, long tweets, threads all at once.' },
-  { title: 'Playground', desc: '// TODO: shitpost/ragebait sandbox without affecting main flow.' }
+  { title: 'Voice-preserving generation', desc: 'Voice analysis + tone sliders keep drafts sounding like you.' },
+  { title: 'Tone sliders', desc: 'Six dimensions to adjust professionalism, polish, energy, optimism, depth, and spice.' },
+  { title: 'Multiple formats', desc: 'Four short tweets, four long tweets, two threads in one pass.' },
+  { title: 'Playground', desc: 'A sandbox for shitposts and ragebait without touching your main flow.' }
 ];
 
 const FeaturesPage = () => (

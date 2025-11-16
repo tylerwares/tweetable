@@ -21,8 +21,7 @@ const IndexPage = () => (
               Your thoughts, made tweet-able.
             </h1>
             <p className="text-lg text-slate-300">
-              {/* TODO: replace with strong, benefit-focused copy explaining turning notes into tweet-ready drafts automatically. */}
-              Turn long-form notes into authentic tweets and threads with tone controls that match your voice.
+              Turn long-form notes, journals, or idea dumps into authentic tweets and threads. Dial in tone with sliders and keep the outputs sounding like you—not a bot.
             </p>
             <div className="flex flex-col gap-4 sm:flex-row">
               <Link
@@ -53,9 +52,9 @@ const IndexPage = () => (
           <h2 className="text-2xl font-semibold text-white">How it works</h2>
           <div className="grid gap-4 md:grid-cols-3">
             {[
-              { title: 'Upload notes', desc: 'Drop .txt or .md files or paste text.' },
-              { title: 'Adjust tone', desc: 'Six sliders to match professionalism, polish, energy, and vibe.' },
-              { title: 'Get drafts', desc: 'Short tweets, long tweets, and threads ready to copy.' }
+              { title: 'Upload notes', desc: 'Drop .txt or .md files or paste text. No storage—processed in-memory.' },
+              { title: 'Adjust tone', desc: 'Six sliders for professionalism, polish, energy, optimism, depth, and spice.' },
+              { title: 'Get drafts', desc: 'Four short tweets, four long tweets, and tight threads ready to copy.' }
             ].map((item) => (
               <div key={item.title} className="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
                 <p className="text-lg font-semibold text-white">{item.title}</p>
@@ -69,9 +68,18 @@ const IndexPage = () => (
           <h2 className="text-2xl font-semibold text-white">Why Tweetable?</h2>
           <div className="grid gap-4 md:grid-cols-3">
             {[
-              { title: 'Built for authenticity', desc: '// TODO: describe voice-preserving generation benefits.' },
-              { title: 'Speed for creators', desc: '// TODO: highlight faster publishing for builders and writers.' },
-              { title: 'Tone control', desc: '// TODO: note the 6 sliders and regen controls.' }
+              {
+                title: 'Built for authenticity',
+                desc: 'Outputs stay in your voice: voice analysis + tone sliders keep the cadence and quirks.'
+              },
+              {
+                title: 'Speed for creators',
+                desc: 'Go from raw notes to publishable drafts in minutes instead of hours.'
+              },
+              {
+                title: 'Tone control',
+                desc: 'Six sliders and per-tweet regeneration keep you in control of energy, polish, and spice.'
+              }
             ].map((item) => (
               <div key={item.title} className="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
                 <p className="text-lg font-semibold text-white">{item.title}</p>
