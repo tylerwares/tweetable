@@ -31,9 +31,12 @@ const AppPage = () => {
   const [baselineLoaded, setBaselineLoaded] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [shortTweets, setShortTweets] = useState<string[]>([]);
-  const [longTweets, setLongTweets] = useState<string[]>([]);
-  const [threads, setThreads] = useState<string[][]>([]);
+  const [shortTweets, setShortTweets] = useState<string[]>(['', '', '', '']);
+  const [longTweets, setLongTweets] = useState<string[]>(['', '', '', '']);
+  const [threads, setThreads] = useState<string[][]>([
+    ['', '', ''],
+    ['', '', '']
+  ]);
 
   useEffect(() => {
     if (!authLoading && !session) {
@@ -78,9 +81,18 @@ const AppPage = () => {
     setMicroStatus(2);
     try {
       const res = await generateToneTweets(noteContent, tone, session.access_token);
-      setShortTweets(res.short_tweets.slice(0, 4));
-      setLongTweets(res.long_tweets.slice(0, 4));
-      setThreads(res.threads.slice(0, 2));
+      const normalizedShort = [...res.short_tweets.slice(0, 4)];
+      while (normalizedShort.length < 4) normalizedShort.push('');
+      const normalizedLong = [...res.long_tweets.slice(0, 4)];
+      while (normalizedLong.length < 4) normalizedLong.push('');
+      const normalizedThreads = [...res.threads.slice(0, 2)];
+      while (normalizedThreads.length < 2) normalizedThreads.push(['', '', '']);
+      normalizedThreads.forEach((t, idx) => {
+        if (t.length < 3) normalizedThreads[idx] = [...t, '', ''];
+      });
+      setShortTweets(normalizedShort);
+      setLongTweets(normalizedLong);
+      setThreads(normalizedThreads);
       setStatusMessage('Tweets ready. Edit or regenerate as needed.');
     } catch (err) {
       console.error(err);
@@ -148,144 +160,152 @@ const AppPage = () => {
   );
 
   return (
-    <main className="min-h-screen bg-slate-950 text-slate-100">
+    <main className="min-h-screen bg-[#f5f7fb] text-slate-900">
       <NavBar />
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-6 pb-20 pt-10">
-        <AuthHeader />
-        {statusMessage && (
-          <div className="rounded-xl border border-amber-600/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
-            {statusMessage}
+      <div className="mx-auto flex w-full max-w-7xl gap-8 px-6 pb-20 pt-10">
+        <aside className="sticky top-4 h-fit w-full max-w-sm">
+          <div className="mb-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <AuthHeader />
           </div>
-        )}
+          <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h1 className="text-2xl font-semibold text-slate-900">Tweetable</h1>
+            <p className="text-sm text-slate-500">Paste notes → analyze voice → adjust tone → generate.</p>
+            <div className="mt-4">
+              <UploadZone onUpload={handleUpload} />
+            </div>
 
-        <section className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5">
-          <h1 className="text-3xl font-semibold">Tweetable</h1>
-          <p className="text-sm text-slate-400">Paste notes → analyze voice → adjust tone → generate.</p>
-          <div className="mt-4">
-            <UploadZone onUpload={handleUpload} />
+            {statusMessage && (
+              <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-700">
+                {statusMessage}
+              </div>
+            )}
+
+            {baselineLoaded && (
+              <div className="mt-6 space-y-3">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-base font-semibold text-slate-900">Tone sliders</h3>
+                  <button
+                    type="button"
+                    onClick={handleGenerate}
+                    disabled={loading || authLoading || !session}
+                    className="rounded-md bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-blue-700 disabled:opacity-50"
+                  >
+                    {loading ? 'Working…' : 'Apply tone & generate'}
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 gap-3">
+                  {(Object.keys(TONE_LABELS) as ToneKey[]).map((key) => (
+                    <ToneSlider key={key} toneKey={key} value={tone[key]} onChange={handleToneChange} />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-          {baselineLoaded && (
-            <div className="mt-6 space-y-3">
-              <h3 className="text-lg font-semibold">Tone sliders</h3>
-              <div className="grid gap-4 md:grid-cols-2">
-                {(Object.keys(TONE_LABELS) as ToneKey[]).map((key) => (
-                  <ToneSlider key={key} toneKey={key} value={tone[key]} onChange={handleToneChange} />
-                ))}
-              </div>
-              <div className="flex gap-3">
-                <button
-                  type="button"
-                  onClick={handleGenerate}
-                  disabled={loading || authLoading || !session}
-                  className="rounded-md bg-brand px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-brand-dark hover:text-white disabled:opacity-50"
-                >
-                  {loading ? 'Working…' : 'Regenerate with new tone'}
-                </button>
-              </div>
-            </div>
-          )}
-        </section>
 
-        {shortTweets.length > 0 || longTweets.length > 0 || threads.length > 0 ? (
-          <section className="flex flex-col gap-6">
-            <div>
-              <h2 className="text-xl font-semibold">Short tweets (4)</h2>
-              <div className="mt-3 grid gap-3 md:grid-cols-2">
-                {shortTweets.map((tweet, idx) => (
-                  <EditableTweet
-                    key={`short-${idx}`}
-                    label={`Short ${idx + 1}`}
-                    initialText={tweet}
-                    onChange={(txt) => {
-                      const next = [...shortTweets];
-                      next[idx] = txt;
-                      setShortTweets(next);
-                    }}
-                    onRegenerate={() => regenerateSlot('short', idx)}
-                  />
-                ))}
-              </div>
-            </div>
+          <div className="mt-4 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-500 shadow-sm">
+            We never store your notes. Files are processed in-memory and immediately discarded.
+          </div>
+        </aside>
 
-            <div>
-              <h2 className="text-xl font-semibold">Long tweets (4)</h2>
-              <div className="mt-3 grid gap-3 md:grid-cols-2">
-                {longTweets.map((tweet, idx) => (
-                  <EditableTweet
-                    key={`long-${idx}`}
-                    label={`Long ${idx + 1}`}
-                    initialText={tweet}
-                    onChange={(txt) => {
-                      const next = [...longTweets];
-                      next[idx] = txt;
-                      setLongTweets(next);
-                    }}
-                    onRegenerate={() => regenerateSlot('long', idx)}
-                  />
-                ))}
-              </div>
+        <section className="flex-1 space-y-6">
+          <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h2 className="text-lg font-semibold text-slate-900">Short tweets (4)</h2>
+            <p className="text-xs text-slate-500">Under 100 characters each.</p>
+            <div className="mt-3 grid gap-3 md:grid-cols-2">
+              {shortTweets.map((tweet, idx) => (
+                <EditableTweet
+                  key={`short-${idx}`}
+                  label={`Short ${idx + 1}`}
+                  initialText={tweet}
+                  onChange={(txt) => {
+                    const next = [...shortTweets];
+                    next[idx] = txt;
+                    setShortTweets(next);
+                  }}
+                  onRegenerate={() => regenerateSlot('short', idx)}
+                />
+              ))}
             </div>
+          </div>
 
-            <div>
-              <h2 className="text-xl font-semibold">Threads (2)</h2>
-              <div className="mt-3 space-y-4">
-                {threads.map((thread, threadIdx) => (
-                  <div key={`thread-${threadIdx}`} className="space-y-2 rounded-xl border border-slate-800 bg-slate-900/60 p-3">
-                    <div className="flex items-center justify-between text-sm text-slate-300">
-                      <span>Thread {threadIdx + 1}</span>
-                      <button
-                        type="button"
-                        onClick={() => regenerateSlot('thread', threadIdx)}
-                        className="rounded-md border border-brand/60 bg-brand/10 px-3 py-1 text-xs font-semibold text-amber-100 hover:border-brand"
-                        disabled={loading}
-                      >
-                        Regenerate thread
-                      </button>
-                    </div>
-                    {thread.map((tweet, tweetIdx) => (
-                      <div key={`tw-${threadIdx}-${tweetIdx}`} className="rounded border border-slate-800 bg-slate-950/70 p-2">
-                        <textarea
-                          className="w-full rounded-md bg-transparent text-sm text-slate-100 outline-none"
-                          rows={2}
-                          value={tweet}
-                          onChange={(e) => updateThreadTweet(threadIdx, tweetIdx, e.target.value)}
-                        />
-                        <div className="mt-1 flex items-center justify-between text-xs text-slate-400">
-                          <span className={tweet.length >= 270 ? 'text-amber-300' : ''}>{tweet.length} chars</span>
-                          <div className="flex gap-2">
-                            <button
-                              type="button"
-                              onClick={() => navigator.clipboard.writeText(tweet)}
-                              className="rounded-md border border-slate-700 px-2 py-1 text-[11px] font-semibold text-slate-200 hover:border-brand"
-                            >
-                              Copy
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => deleteTweetFromThread(threadIdx, tweetIdx)}
-                              className="rounded-md border border-red-700 px-2 py-1 text-[11px] font-semibold text-red-300 hover:border-red-500"
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
+          <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h2 className="text-lg font-semibold text-slate-900">Long tweets (4)</h2>
+            <p className="text-xs text-slate-500">100–280 characters.</p>
+            <div className="mt-3 grid gap-3 md:grid-cols-2">
+              {longTweets.map((tweet, idx) => (
+                <EditableTweet
+                  key={`long-${idx}`}
+                  label={`Long ${idx + 1}`}
+                  initialText={tweet}
+                  onChange={(txt) => {
+                    const next = [...longTweets];
+                    next[idx] = txt;
+                    setLongTweets(next);
+                  }}
+                  onRegenerate={() => regenerateSlot('long', idx)}
+                />
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h2 className="text-lg font-semibold text-slate-900">Threads (2)</h2>
+            <p className="text-xs text-slate-500">Each thread has 3–5 tweets.</p>
+            <div className="mt-3 space-y-4">
+              {threads.map((thread, threadIdx) => (
+                <div key={`thread-${threadIdx}`} className="space-y-2 rounded-lg border border-slate-200 bg-slate-50 p-3">
+                  <div className="flex items-center justify-between text-sm text-slate-600">
+                    <span>Thread {threadIdx + 1}</span>
                     <button
                       type="button"
-                      onClick={() => addTweetToThread(threadIdx)}
-                      className="rounded-md border border-slate-700 px-3 py-1 text-xs font-semibold text-slate-200 hover:border-brand"
+                      onClick={() => regenerateSlot('thread', threadIdx)}
+                      className="rounded-md border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 hover:border-blue-300"
+                      disabled={loading}
                     >
-                      Add tweet
+                      Regenerate thread
                     </button>
                   </div>
-                ))}
-              </div>
+                  {thread.map((tweet, tweetIdx) => (
+                    <div key={`tw-${threadIdx}-${tweetIdx}`} className="rounded border border-slate-200 bg-white p-2">
+                      <textarea
+                        className="w-full rounded-md bg-transparent text-sm text-slate-900 outline-none"
+                        rows={2}
+                        value={tweet}
+                        onChange={(e) => updateThreadTweet(threadIdx, tweetIdx, e.target.value)}
+                      />
+                      <div className="mt-1 flex items-center justify-between text-xs text-slate-500">
+                        <span className={tweet.length >= 270 ? 'text-amber-500' : ''}>{tweet.length} chars</span>
+                        <div className="flex gap-2">
+                          <button
+                            type="button"
+                            onClick={() => navigator.clipboard.writeText(tweet)}
+                            className="rounded-md border border-slate-200 px-2 py-1 text-[11px] font-semibold text-slate-700 hover:border-slate-300"
+                          >
+                            Copy
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => deleteTweetFromThread(threadIdx, tweetIdx)}
+                            className="rounded-md border border-red-200 px-2 py-1 text-[11px] font-semibold text-red-600 hover:border-red-300"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => addTweetToThread(threadIdx)}
+                    className="rounded-md border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-700 hover:border-slate-300"
+                  >
+                    Add tweet
+                  </button>
+                </div>
+              ))}
             </div>
-          </section>
-        ) : null}
-
-        {privacyBadge}
+          </div>
+        </section>
       </div>
     </main>
   );

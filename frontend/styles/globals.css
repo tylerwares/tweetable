@@ -3,16 +3,15 @@
 @tailwind utilities;
 
 html {
-  @apply text-slate-100;
-  background: radial-gradient(circle at 20% 20%, rgba(56, 189, 248, 0.1), transparent 25%),
-    radial-gradient(circle at 80% 0%, rgba(59, 130, 246, 0.1), transparent 25%),
-    #070b16;
+  color: #0b1224;
+  background: #f5f7fb;
 }
 
 body {
-  @apply min-h-screen bg-transparent text-slate-100 antialiased;
+  @apply min-h-screen bg-transparent antialiased;
+  color: #0b1224;
 }
 
 a {
-  @apply text-brand;
+  color: #2563eb;
 }
