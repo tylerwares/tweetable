@@ -156,9 +156,13 @@ class ToneService:
                     arr.append('')
                 return arr[:target]
 
-            short = _pad_list(raw.get('short_tweets'), 4)
-            long = _pad_list(raw.get('long_tweets'), 4)
-            threads_raw = raw.get('threads') if isinstance(raw.get('threads'), list) else []
+            short_source = raw.get('short_tweets') or raw.get('shortTweets')
+            long_source = raw.get('long_tweets') or raw.get('longTweets')
+            thread_source = raw.get('threads') or raw.get('Threads')
+
+            short = _pad_list(short_source, 4)
+            long = _pad_list(long_source, 4)
+            threads_raw = thread_source if isinstance(thread_source, list) else []
             threads: list[list[str]] = []
             for t in threads_raw[:2]:
                 t_arr = list(t) if isinstance(t, list) else []

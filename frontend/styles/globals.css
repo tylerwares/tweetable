@@ -3,16 +3,16 @@
 @tailwind utilities;
 
 html {
-  color: #e5e7eb;
-  background: #0f1419;
+  color: #0f172a;
+  background: #f5f7fb;
 }
 
 body {
   @apply min-h-screen bg-transparent antialiased;
-  color: #e5e7eb;
-  background: radial-gradient(circle at 20% 20%, rgba(29, 155, 240, 0.08), transparent 30%),
-    radial-gradient(circle at 80% 0%, rgba(29, 155, 240, 0.06), transparent 30%),
-    #0f1419;
+  color: #0f172a;
+  background: radial-gradient(circle at 20% 20%, rgba(29, 155, 240, 0.08), transparent 25%),
+    radial-gradient(circle at 80% 0%, rgba(29, 155, 240, 0.05), transparent 30%),
+    #f5f7fb;
 }
 
 a {

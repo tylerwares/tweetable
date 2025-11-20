@@ -165,22 +165,22 @@ const AppPage = () => {
   );
 
   return (
-    <main className="min-h-screen bg-[#0f1419] text-slate-100">
+    <main className="min-h-screen bg-[#f5f7fb] text-slate-900">
       <NavBar />
       <div className="mx-auto flex w-full max-w-7xl gap-8 px-6 pb-20 pt-10">
         <aside className="sticky top-4 h-fit w-full max-w-sm">
-          <div className="mb-4 rounded-xl border border-slate-800/60 bg-[#111722] p-5 shadow-lg">
+          <div className="mb-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
             <AuthHeader />
           </div>
-          <div className="rounded-xl border border-slate-800/60 bg-[#111722] p-5 shadow-lg">
-            <h1 className="text-2xl font-semibold text-white">Tweetable</h1>
-            <p className="text-sm text-slate-400">Paste notes → analyze voice → adjust tone → generate.</p>
+          <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h1 className="text-2xl font-semibold text-slate-900">Tweetable</h1>
+            <p className="text-sm text-slate-500">Paste notes → analyze voice → adjust tone → generate.</p>
             <div className="mt-4">
               <UploadZone onUpload={handleUpload} />
             </div>
 
             {statusMessage && (
-              <div className="mt-3 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-sm text-amber-200">
+              <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-700">
                 {statusMessage}
               </div>
             )}
@@ -188,7 +188,7 @@ const AppPage = () => {
             {baselineLoaded && (
               <div className="mt-6 space-y-3">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-base font-semibold text-white">Tone sliders</h3>
+                  <h3 className="text-base font-semibold text-slate-900">Tone sliders</h3>
                   <button
                     type="button"
                     onClick={handleGenerate}
@@ -207,15 +207,15 @@ const AppPage = () => {
             )}
           </div>
 
-          <div className="mt-4 rounded-lg border border-slate-800/60 bg-[#111722] px-3 py-2 text-xs text-slate-400 shadow">
+          <div className="mt-4 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-500 shadow-sm">
             We never store your notes. Files are processed in-memory and immediately discarded.
           </div>
         </aside>
 
         <section className="flex-1 space-y-6">
-          <div className="rounded-xl border border-slate-800/60 bg-[#0d111a] p-5 shadow-lg">
-            <h2 className="text-lg font-semibold text-white">Short tweets (4)</h2>
-            <p className="text-xs text-slate-400">Under 100 characters each.</p>
+          <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h2 className="text-lg font-semibold text-slate-900">Short tweets (4)</h2>
+            <p className="text-xs text-slate-500">Under 100 characters each.</p>
             <div className="mt-3 grid gap-3 md:grid-cols-2">
               {shortTweets.map((tweet, idx) => (
                 <EditableTweet
@@ -233,9 +233,9 @@ const AppPage = () => {
             </div>
           </div>
 
-          <div className="rounded-xl border border-slate-800/60 bg-[#0d111a] p-5 shadow-lg">
-            <h2 className="text-lg font-semibold text-white">Long tweets (4)</h2>
-            <p className="text-xs text-slate-400">100–280 characters.</p>
+          <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h2 className="text-lg font-semibold text-slate-900">Long tweets (4)</h2>
+            <p className="text-xs text-slate-500">100–280 characters.</p>
             <div className="mt-3 grid gap-3 md:grid-cols-2">
               {longTweets.map((tweet, idx) => (
                 <EditableTweet
@@ -253,45 +253,45 @@ const AppPage = () => {
             </div>
           </div>
 
-          <div className="rounded-xl border border-slate-800/60 bg-[#0d111a] p-5 shadow-lg">
-            <h2 className="text-lg font-semibold text-white">Threads (2)</h2>
-            <p className="text-xs text-slate-400">Each thread has 3–5 tweets.</p>
+          <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h2 className="text-lg font-semibold text-slate-900">Threads (2)</h2>
+            <p className="text-xs text-slate-500">Each thread has 3–5 tweets.</p>
             <div className="mt-3 space-y-4">
               {threads.map((thread, threadIdx) => (
-                <div key={`thread-${threadIdx}`} className="space-y-2 rounded-lg border border-slate-800 bg-[#0f1724] p-3">
-                  <div className="flex items-center justify-between text-sm text-slate-300">
+                <div key={`thread-${threadIdx}`} className="space-y-2 rounded-lg border border-slate-200 bg-slate-50 p-3">
+                  <div className="flex items-center justify-between text-sm text-slate-600">
                     <span>Thread {threadIdx + 1}</span>
                     <button
                       type="button"
                       onClick={() => regenerateSlot('thread', threadIdx)}
-                      className="rounded-md border border-[#1d9bf0]/30 bg-[#1d9bf0]/10 px-3 py-1 text-xs font-semibold text-[#8dd1ff] hover:border-[#1d9bf0]"
+                      className="rounded-md border border-[#1d9bf0]/40 bg-[#1d9bf0]/10 px-3 py-1 text-xs font-semibold text-[#0b4778] hover:border-[#1d9bf0]"
                       disabled={loading}
                     >
                       Regenerate thread
                     </button>
                   </div>
                   {thread.map((tweet, tweetIdx) => (
-                    <div key={`tw-${threadIdx}-${tweetIdx}`} className="rounded border border-slate-800 bg-[#0d111a] p-2">
+                    <div key={`tw-${threadIdx}-${tweetIdx}`} className="rounded border border-slate-200 bg-white p-2">
                       <textarea
-                        className="w-full rounded-md bg-transparent text-sm text-slate-100 outline-none"
+                        className="w-full rounded-md bg-transparent text-sm text-slate-900 outline-none"
                         rows={2}
                         value={tweet}
                         onChange={(e) => updateThreadTweet(threadIdx, tweetIdx, e.target.value)}
                       />
-                      <div className="mt-1 flex items-center justify-between text-xs text-slate-400">
-                        <span className={tweet.length >= 270 ? 'text-amber-300' : ''}>{tweet.length} chars</span>
+                      <div className="mt-1 flex items-center justify-between text-xs text-slate-500">
+                        <span className={tweet.length >= 270 ? 'text-amber-500' : ''}>{tweet.length} chars</span>
                         <div className="flex gap-2">
                           <button
                             type="button"
                             onClick={() => navigator.clipboard.writeText(tweet)}
-                            className="rounded-md border border-slate-700 px-2 py-1 text-[11px] font-semibold text-slate-100 hover:border-[#1d9bf0]"
+                            className="rounded-md border border-slate-200 px-2 py-1 text-[11px] font-semibold text-slate-700 hover:border-[#1d9bf0]"
                           >
                             Copy
                           </button>
                           <button
                             type="button"
                             onClick={() => deleteTweetFromThread(threadIdx, tweetIdx)}
-                            className="rounded-md border border-red-700 px-2 py-1 text-[11px] font-semibold text-red-300 hover:border-red-500"
+                            className="rounded-md border border-red-200 px-2 py-1 text-[11px] font-semibold text-red-600 hover:border-red-300"
                           >
                             Delete
                           </button>
@@ -302,7 +302,7 @@ const AppPage = () => {
                   <button
                     type="button"
                     onClick={() => addTweetToThread(threadIdx)}
-                    className="rounded-md border border-slate-700 bg-[#0d111a] px-3 py-1 text-xs font-semibold text-slate-100 hover:border-[#1d9bf0]"
+                    className="rounded-md border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-700 hover:border-[#1d9bf0]"
                   >
                     Add tweet
                   </button>
