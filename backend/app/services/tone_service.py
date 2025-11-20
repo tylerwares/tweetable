@@ -148,8 +148,28 @@ class ToneService:
             clean_profane=tone.clean_profane
         )
         try:
-            data = await self._call_json(prompt)
-            return ToneGenerateResponse.model_validate(data)
+            raw = await self._call_json(prompt)
+
+            def _pad_list(items: Any, target: int) -> list[str]:
+                arr = list(items) if isinstance(items, list) else []
+                while len(arr) < target:
+                    arr.append('')
+                return arr[:target]
+
+            short = _pad_list(raw.get('short_tweets'), 4)
+            long = _pad_list(raw.get('long_tweets'), 4)
+            threads_raw = raw.get('threads') if isinstance(raw.get('threads'), list) else []
+            threads: list[list[str]] = []
+            for t in threads_raw[:2]:
+                t_arr = list(t) if isinstance(t, list) else []
+                while len(t_arr) < 3:
+                    t_arr.append('')
+                threads.append(t_arr[:5])
+            while len(threads) < 2:
+                threads.append(['', '', ''])
+
+            merged = {'short_tweets': short, 'long_tweets': long, 'threads': threads}
+            return ToneGenerateResponse.model_validate(merged)
         except Exception as exc:
             raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=f'Generation failed: {exc}') from exc
 
