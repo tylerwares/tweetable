@@ -2,11 +2,11 @@ import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';
 
 const AboutPage = () => (
-  <main className="min-h-screen bg-slate-950 text-slate-100">
+  <main className="min-h-screen bg-[#f5f7fb] text-slate-900">
     <NavBar />
     <section className="mx-auto w-full max-w-5xl px-6 pb-20 pt-16 space-y-8">
-      <h1 className="text-3xl font-semibold">About Tweetable</h1>
-      <div className="space-y-4 text-sm text-slate-300">
+      <h1 className="text-3xl font-semibold text-slate-900">About Tweetable</h1>
+      <div className="space-y-4 text-sm text-slate-600">
         <p>
           Tweetable turns your long-form notes and brain dumps into tweet-ready drafts without losing your voice.
           It’s built for creators, founders, and writers who want to publish faster without sounding generic.

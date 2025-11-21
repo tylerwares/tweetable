@@ -1,9 +1,19 @@
 export type StageLiteral = 'voice' | 'ideas' | 'angles' | 'tweets' | 'shitpost';
 
+export interface ToneProfile {
+  professional_casual: number;
+  polished_chaotic: number;
+  calm_enraged: number;
+  optimistic_cynical: number;
+  insightful_entertaining: number;
+  clean_profane: number;
+}
+
 export interface VoiceProfile {
   voice_profile: string;
   stylistic_quirks: string[];
   persona: string;
+  tone_scores: ToneProfile;
 }
 
 export interface IdeaItem {
@@ -28,8 +38,8 @@ export interface InsightAnglesResponse {
 }
 
 export interface TweetOutput {
-  short_tweet: string;
-  tweets: string[];
+  short_tweets: string[];
+  long_tweets: string[];
   threads: string[][];
 }
 
@@ -56,21 +66,6 @@ export interface PipelineStageResponse {
   shitpost?: ShitpostResponse;
 }
 
-export interface ToneProfile {
-  professional_casual: number;
-  polished_chaotic: number;
-  calm_enraged: number;
-  optimistic_cynical: number;
-  insightful_entertaining: number;
-  clean_profane: number;
-}
-
-export interface ToneGenerateResponse {
-  short_tweets: string[];
-  long_tweets: string[];
-  threads: string[][];
-}
-
 export interface PipelineStageRequest {
   note_text?: string;
   voice_profile?: VoiceProfile;
@@ -78,4 +73,5 @@ export interface PipelineStageRequest {
   angles?: InsightAnglesResponse;
   include_shitpost?: boolean;
   session_id?: string;
+  tone_overrides?: ToneProfile;
 }

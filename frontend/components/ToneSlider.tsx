@@ -27,9 +27,9 @@ const ToneSlider = ({ toneKey, value, onChange }: ToneSliderProps) => {
   const labels = TONE_LABELS[toneKey];
   return (
     <div className="space-y-1">
-      <div className="flex items-center justify-between text-xs text-slate-400">
+      <div className="flex items-center justify-between text-xs text-slate-500">
         <span>{labels.left}</span>
-        <span className="font-semibold text-slate-200">{labels.title}</span>
+        <span className="font-semibold text-slate-900">{labels.title}</span>
         <span>{labels.right}</span>
       </div>
       <input
@@ -38,12 +38,12 @@ const ToneSlider = ({ toneKey, value, onChange }: ToneSliderProps) => {
         max={100}
         value={value}
         className={clsx(
-          'w-full cursor-pointer appearance-none rounded-full bg-slate-800 accent-brand',
+          'w-full cursor-pointer appearance-none rounded-full bg-slate-200 accent-[#1d9bf0]',
           'h-2'
         )}
         onChange={(e) => onChange(toneKey, Number(e.target.value))}
       />
-      <div className="text-right text-[11px] text-slate-400">{value}</div>
+      <div className="text-right text-[11px] text-slate-500">{value}</div>
     </div>
   );
 };

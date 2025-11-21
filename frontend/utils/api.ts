@@ -3,7 +3,6 @@ import type {
   PipelineStageRequest,
   PipelineStageResponse,
   StageLiteral,
-  ToneGenerateResponse,
   ToneProfile
 } from '@/types/pipeline';
 
@@ -33,19 +32,9 @@ export const postJson = async <TData = unknown, TResponse = unknown>(
 };
 
 export const runPipeline = (
-  data: { note_text: string; include_shitpost?: boolean; session_id?: string },
+  data: { note_text: string; include_shitpost?: boolean; session_id?: string; tone_overrides?: ToneProfile },
   token: string
 ) => postJson<typeof data, PipelineRunResponse>('/pipeline/run', data, token);
 
 export const regenerateStage = (stage: StageLiteral, data: PipelineStageRequest, token: string) =>
   postJson<PipelineStageRequest, PipelineStageResponse>(`/pipeline/stage/${stage}`, data, token);
-
-export const analyzeTone = (note_text: string, token: string) =>
-  postJson<{ note_text: string }, ToneProfile>('/tone/analyze', { note_text }, token);
-
-export const generateToneTweets = (note_text: string, tone: ToneProfile, token: string) =>
-  postJson<{ note_text: string; tone: ToneProfile }, ToneGenerateResponse>(
-    '/tone/generate',
-    { note_text, tone },
-    token
-  );

@@ -56,10 +56,20 @@ class PersonaProfile(BaseModel):
 # ----- Multi-stage pipeline schemas -----
 
 
+class ToneScores(BaseModel):
+    professional_casual: int = Field(ge=0, le=100)
+    polished_chaotic: int = Field(ge=0, le=100)
+    calm_enraged: int = Field(ge=0, le=100)
+    optimistic_cynical: int = Field(ge=0, le=100)
+    insightful_entertaining: int = Field(ge=0, le=100)
+    clean_profane: int = Field(ge=0, le=100)
+
+
 class VoiceProfileResponse(BaseModel):
     voice_profile: str
     stylistic_quirks: List[str]
     persona: str
+    tone_scores: ToneScores
 
 
 class IdeaItem(BaseModel):
@@ -84,8 +94,8 @@ class InsightAnglesResponse(BaseModel):
 
 
 class TweetOutput(BaseModel):
-    short_tweet: str
-    tweets: List[str]
+    short_tweets: List[str]
+    long_tweets: List[str]
     threads: List[List[str]]
 
 
@@ -97,6 +107,7 @@ class PipelineRunRequest(BaseModel):
     note_text: str
     include_shitpost: bool = True
     session_id: Optional[str] = None
+    tone_overrides: Optional[ToneScores] = None
 
 
 class PipelineRunResponse(BaseModel):
@@ -118,6 +129,7 @@ class PipelineStageRequest(BaseModel):
     angles: Optional[InsightAnglesResponse] = None
     include_shitpost: bool = True
     session_id: Optional[str] = None
+    tone_overrides: Optional[ToneScores] = None
 
 
 class PipelineStageResponse(BaseModel):

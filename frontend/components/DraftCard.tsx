@@ -23,17 +23,17 @@ const DraftCard = ({ content, variant = 'short', onSave }: DraftCardProps) => {
   return (
     <article
       className={clsx(
-        'flex h-full flex-col justify-between rounded-lg border border-slate-800 bg-slate-950/90 p-4 shadow-sm transition hover:border-brand',
-        variant === 'thread' && 'border-slate-700'
+        'flex h-full flex-col justify-between rounded-lg border border-slate-200 bg-white p-4 shadow-sm transition hover:border-[#1d9bf0]',
+        variant === 'thread' && 'border-slate-200'
       )}
     >
-      <p className="whitespace-pre-wrap text-sm text-slate-100">{content}</p>
+      <p className="whitespace-pre-wrap text-sm text-slate-900">{content}</p>
 
       <div className="mt-4 flex items-center gap-2">
         <button
           type="button"
           onClick={handleCopy}
-          className="rounded-md bg-slate-800 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-slate-200 transition hover:bg-slate-700"
+          className="rounded-md bg-[#1d9bf0] px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-white transition hover:bg-[#1583ca]"
         >
           {copied ? 'Copied!' : 'Copy'}
         </button>
@@ -41,7 +41,7 @@ const DraftCard = ({ content, variant = 'short', onSave }: DraftCardProps) => {
           <button
             type="button"
             onClick={() => onSave(content)}
-            className="rounded-md border border-slate-700 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-slate-300 transition hover:border-brand hover:text-white"
+            className="rounded-md border border-slate-200 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-slate-700 transition hover:border-[#1d9bf0] hover:text-[#1d9bf0]"
           >
             Save
           </button>

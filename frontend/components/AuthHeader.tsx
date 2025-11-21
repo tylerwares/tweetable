@@ -12,10 +12,10 @@ const AuthHeader = () => {
   const userEmail = session?.user.email;
 
   return (
-    <header className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-800 bg-slate-900/70 px-6 py-4">
+    <header className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white px-6 py-4 shadow-sm">
       <div>
-        <p className="text-sm font-semibold text-slate-100">Tweetable.app</p>
-        <p className="text-xs text-slate-400">{userEmail ? `Signed in as ${userEmail}` : 'Sign in to generate & save drafts'}</p>
+        <p className="text-sm font-semibold text-slate-900">Tweetable.app</p>
+        <p className="text-xs text-slate-500">{userEmail ? `Signed in as ${userEmail}` : 'Sign in to generate & save drafts'}</p>
       </div>
       <div className="flex items-center gap-2">
         <UpgradeButton />
@@ -25,7 +25,7 @@ const AuthHeader = () => {
             onClick={() => {
               void signOut();
             }}
-            className="rounded-md border border-slate-700 px-4 py-2 text-sm font-medium text-slate-200 hover:border-brand"
+            className="rounded-md border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:border-[#1d9bf0]"
           >
             Sign out
           </button>
@@ -34,7 +34,7 @@ const AuthHeader = () => {
             type="button"
             disabled={loading}
             onClick={openModal}
-            className="rounded-md bg-brand px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-brand-dark hover:text-white disabled:opacity-60"
+            className="rounded-md bg-[#1d9bf0] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#1583ca] disabled:opacity-60"
           >
             {loading ? 'Loading…' : 'Sign in'}
           </button>
@@ -89,7 +89,7 @@ const UpgradeButton = () => {
       type="button"
       onClick={startCheckout}
       disabled={!session || loading}
-      className="rounded-md border border-amber-600/40 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-amber-200 hover:border-amber-400 disabled:opacity-60"
+      className="rounded-md border border-[#1d9bf0]/50 bg-[#1d9bf0]/10 px-3 py-2 text-xs font-semibold text-[#0b4778] hover:border-[#1d9bf0] disabled:opacity-60"
       title={session ? 'Upgrade to Pro' : 'Sign in to upgrade'}
     >
       {loading ? 'Redirecting…' : 'Upgrade to Pro'}

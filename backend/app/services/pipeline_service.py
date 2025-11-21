@@ -19,9 +19,20 @@ from ..schemas import (
     IdeasResponse,
     InsightAnglesResponse,
     ShitpostResponse,
+    ToneScores,
     TweetOutput,
     VoiceProfileResponse
 )
+
+
+DEFAULT_TONE = {
+    'professional_casual': 50,
+    'polished_chaotic': 50,
+    'calm_enraged': 50,
+    'optimistic_cynical': 50,
+    'insightful_entertaining': 50,
+    'clean_profane': 50,
+}
 
 
 STAGE1_PROMPT = """You are Tweetable Stage 1: Voice & Persona Extractor.
@@ -29,11 +40,18 @@ Analyze the user's raw input text and extract:
 1. VOICE_PROFILE — describe their tone (snarky, blunt, hopeful, sarcastic, introspective, degen, etc.)
 2. STYLISTIC_QUIRKS — list 5–10 patterns such as favorite phrases, structure, cadence, or pet peeves.
 3. PERSONA — a short label that captures who the user is.
+4. TONE_SCORES — numeric sliders (0-100) estimating the user's natural tone for:
+   - professional_casual
+   - polished_chaotic
+   - calm_enraged
+   - optimistic_cynical
+   - insightful_entertaining
+   - clean_profane
 
 Rules:
 - Be precise and evocative.
 - Never invent traits not implied by the text.
-- Return JSON with keys voice_profile, stylistic_quirks, persona.
+- Return JSON with keys voice_profile, stylistic_quirks, persona, tone_scores.
 
 Raw Text:
 {raw_text}
@@ -101,21 +119,32 @@ Persona: {persona}
 Insight Angles:
 {angles}
 
+Tone controls (0-100 scale):
+- Professional ↔ Casual: {professional_casual}
+- Polished ↔ Chaotic: {polished_chaotic}
+- Calm ↔ Enraged: {calm_enraged}
+- Optimistic ↔ Cynical: {optimistic_cynical}
+- Insightful ↔ Entertaining: {insightful_entertaining}
+- Clean ↔ Profane: {clean_profane}
+
 Generate:
-1. short_tweet (<100 chars)
-2. Two tweets (<280 chars)
-3. Two threads (each 3-5 tweets)
+1. Four short tweets (<100 chars).
+2. Four long tweets (100–280 chars).
+3. Two threads, each 3–5 tweets and grounded in the angles.
 
 Rules:
-- Must sound human and match the user's quirks.
+- Must sound human and match the user's quirks and tone sliders.
 - No corporate tone or fluffy self-help.
-- Build each tweet/thread around the angles.
+- Build each tweet/thread around the provided angles.
 
 Return JSON:
 {{
-  "short_tweet": "",
-  "tweets": ["", ""],
-  "threads": [["", "", ""], ["", "", ""]]
+  "short_tweets": ["", "", "", ""],
+  "long_tweets": ["", "", "", ""],
+  "threads": [
+    ["", "", ""],
+    ["", "", "", ""]
+  ]
 }}
 """
 
@@ -179,6 +208,7 @@ class PipelineLLMService:
 
     async def run_stage1(self, note_text: str) -> VoiceProfileResponse:
         data = await self._call(STAGE1_PROMPT.format(raw_text=note_text))
+        data['tone_scores'] = self._sanitize_tone(data.get('tone_scores'))
         return VoiceProfileResponse.model_validate(data)
 
     async def run_stage2(self, note_text: str, voice: VoiceProfileResponse) -> IdeasResponse:
@@ -203,16 +233,40 @@ class PipelineLLMService:
         )
         return InsightAnglesResponse.model_validate(data)
 
-    async def run_stage4(self, voice: VoiceProfileResponse, angles: InsightAnglesResponse) -> TweetOutput:
+    async def run_stage4(self, voice: VoiceProfileResponse, angles: InsightAnglesResponse, tone: ToneScores) -> TweetOutput:
+        tone_dict = self._sanitize_tone(tone.model_dump())
         data = await self._call(
             STAGE4_PROMPT.format(
                 voice_profile=voice.voice_profile,
                 quirks='; '.join(voice.stylistic_quirks),
                 persona=voice.persona,
-                angles=json.dumps(angles.model_dump()['angles'], indent=2)
+                angles=json.dumps(angles.model_dump()['angles'], indent=2),
+                **tone_dict
             )
         )
-        return TweetOutput.model_validate(data)
+
+        def _pad_list(items: Any, target: int) -> list[str]:
+            arr = list(items) if isinstance(items, list) else []
+            while len(arr) < target:
+                arr.append('')
+            return arr[:target]
+
+        short = _pad_list(data.get('short_tweets'), 4)
+        long = _pad_list(data.get('long_tweets'), 4)
+        raw_threads = data.get('threads') if isinstance(data.get('threads'), list) else []
+        threads = []
+        for idx in range(2):
+            base = list(raw_threads[idx]) if idx < len(raw_threads) and isinstance(raw_threads[idx], list) else []
+            while len(base) < 3:
+                base.append('')
+            threads.append(base[:5])
+
+        cleaned = {
+            'short_tweets': short,
+            'long_tweets': long,
+            'threads': threads
+        }
+        return TweetOutput.model_validate(cleaned)
 
     async def run_stage5(self, voice: VoiceProfileResponse, angles: InsightAnglesResponse) -> ShitpostResponse:
         data = await self._call(
@@ -224,6 +278,17 @@ class PipelineLLMService:
             )
         )
         return ShitpostResponse.model_validate(data)
+
+    def _sanitize_tone(self, payload: Any) -> ToneScores:
+        base = DEFAULT_TONE.copy()
+        if isinstance(payload, dict):
+            for key in base:
+                value = payload.get(key)
+                try:
+                    base[key] = max(0, min(100, int(value)))
+                except (TypeError, ValueError):
+                    continue
+        return ToneScores.model_validate(base)
 
 
 pipeline_llm_service = PipelineLLMService()

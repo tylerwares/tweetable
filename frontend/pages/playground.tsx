@@ -30,15 +30,15 @@ const PlaygroundPage = () => {
   };
 
   return (
-    <main className="min-h-screen bg-slate-950 px-6 pb-20 pt-12 text-slate-100">
+    <main className="min-h-screen bg-[#f5f7fb] px-6 pb-20 pt-12 text-slate-900">
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
         <AuthHeader />
         <header>
           <h1 className="text-3xl font-semibold">Playground</h1>
-          <p className="text-sm text-slate-400">Shitpost / ragebait sandbox (separate from main flow).</p>
+          <p className="text-sm text-slate-600">Shitpost / ragebait sandbox (separate from main flow).</p>
         </header>
         <textarea
-          className="w-full rounded-md border border-slate-800 bg-slate-950 p-3 text-sm text-slate-100 focus:border-brand focus:outline-none"
+          className="w-full rounded-md border border-slate-200 bg-white p-3 text-sm text-slate-900 focus:border-[#1d9bf0] focus:outline-none"
           rows={6}
           value={note}
           onChange={(e) => setNote(e.target.value)}
@@ -49,7 +49,7 @@ const PlaygroundPage = () => {
             type="button"
             disabled={!session || loading}
             onClick={() => handleGenerate('shitpost')}
-            className="rounded-md bg-brand px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-brand-dark hover:text-white disabled:opacity-60"
+            className="rounded-md bg-[#1d9bf0] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#1583ca] disabled:opacity-60"
           >
             Shitpost
           </button>
@@ -57,14 +57,14 @@ const PlaygroundPage = () => {
             type="button"
             disabled={!session || loading}
             onClick={() => handleGenerate('ragebait')}
-            className="rounded-md border border-amber-500/60 bg-amber-500/10 px-4 py-2 text-sm font-semibold text-amber-100 transition hover:border-amber-400 disabled:opacity-60"
+            className="rounded-md border border-amber-500/60 bg-amber-500/10 px-4 py-2 text-sm font-semibold text-amber-600 transition hover:border-amber-500 disabled:opacity-60"
           >
             Ragebait
           </button>
         </div>
-        {status && <p className="text-sm text-amber-200">{status}</p>}
+        {status && <p className="text-sm text-amber-600">{status}</p>}
         {output && (
-          <div className="rounded-lg border border-slate-800 bg-slate-900/60 p-4 text-sm text-slate-100">
+          <div className="rounded-lg border border-slate-200 bg-white p-4 text-sm text-slate-700 shadow-sm">
             {output}
           </div>
         )}

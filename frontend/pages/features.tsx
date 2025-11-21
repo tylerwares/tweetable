@@ -9,15 +9,15 @@ const features = [
 ];
 
 const FeaturesPage = () => (
-  <main className="min-h-screen bg-slate-950 text-slate-100">
+  <main className="min-h-screen bg-[#f5f7fb] text-slate-900">
     <NavBar />
     <section className="mx-auto w-full max-w-5xl px-6 pb-20 pt-16 space-y-8">
       <h1 className="text-3xl font-semibold">Features</h1>
       <div className="grid gap-4 md:grid-cols-2">
         {features.map((feature) => (
-          <div key={feature.title} className="rounded-xl border border-slate-800 bg-slate-900/60 p-5">
-            <p className="text-lg font-semibold text-white">{feature.title}</p>
-            <p className="mt-2 text-sm text-slate-400">{feature.desc}</p>
+          <div key={feature.title} className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <p className="text-lg font-semibold text-slate-900">{feature.title}</p>
+            <p className="mt-2 text-sm text-slate-600">{feature.desc}</p>
           </div>
         ))}
       </div>

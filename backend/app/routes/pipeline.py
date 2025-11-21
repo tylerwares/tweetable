@@ -75,7 +75,8 @@ async def run_pipeline(
     angles = await pipeline_llm_service.run_stage3(voice, ideas)
     _persist_stage(supabase, 'angles', session_id, user_id, angles.model_dump())
 
-    tweets = await pipeline_llm_service.run_stage4(voice, angles)
+    tone_for_generation = payload.tone_overrides or voice.tone_scores
+    tweets = await pipeline_llm_service.run_stage4(voice, angles, tone_for_generation)
     _persist_stage(supabase, 'tweets', session_id, user_id, tweets.model_dump())
 
     shitpost = None
@@ -132,7 +133,9 @@ async def regenerate_stage(
     elif stage == 'tweets':
         _require(voice is not None, 'voice_profile is required for tweets stage')
         _require(angles is not None, 'angles are required for tweets stage')
-        tweets = await pipeline_llm_service.run_stage4(voice, angles)
+        tone_for_generation = payload.tone_overrides or (voice.tone_scores if voice else None)
+        _require(tone_for_generation is not None, 'tone scores required for tweet stage')
+        tweets = await pipeline_llm_service.run_stage4(voice, angles, tone_for_generation)
     elif stage == 'shitpost':
         _require(voice is not None, 'voice_profile is required for shitpost stage')
         _require(angles is not None, 'angles are required for shitpost stage')

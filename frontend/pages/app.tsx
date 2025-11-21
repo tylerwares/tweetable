@@ -1,12 +1,19 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import AuthHeader from '@/components/AuthHeader';
 import NavBar from '@/components/NavBar';
 import ToneSlider, { ToneKey, TONE_LABELS } from '@/components/ToneSlider';
 import EditableTweet from '@/components/EditableTweet';
 import UploadZone from '@/components/UploadZone';
 import { useAuth } from '@/hooks/useAuth';
-import { analyzeTone, generateToneTweets } from '@/utils/api';
-import type { ToneProfile } from '@/types/pipeline';
+import { regenerateStage, runPipeline } from '@/utils/api';
+import type {
+  IdeaItem,
+  InsightAngle,
+  PipelineRunResponse,
+  ToneProfile,
+  TweetOutput,
+  VoiceProfile
+} from '@/types/pipeline';
 
 const defaultTone: ToneProfile = {
   professional_casual: 50,
@@ -26,11 +33,14 @@ const microMessages = [
 
 const AppPage = () => {
   const { session, loading: authLoading } = useAuth();
-  const [noteContent, setNoteContent] = useState('');
   const [tone, setTone] = useState<ToneProfile>(defaultTone);
   const [baselineLoaded, setBaselineLoaded] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [voiceProfile, setVoiceProfile] = useState<VoiceProfile | null>(null);
+  const [ideas, setIdeas] = useState<IdeaItem[]>([]);
+  const [angles, setAngles] = useState<InsightAngle[]>([]);
   const [shortTweets, setShortTweets] = useState<string[]>(['', '', '', '']);
   const [longTweets, setLongTweets] = useState<string[]>(['', '', '', '']);
   const [threads, setThreads] = useState<string[][]>([
@@ -46,43 +56,13 @@ const AppPage = () => {
 
   const setMicroStatus = (index: number) => setStatusMessage(microMessages[index] ?? 'Working…');
 
-  const runGeneration = async (rawText: string, toneProfile: ToneProfile) => {
-    setLoading(true);
-    setMicroStatus(2);
-    try {
-      const res = await generateToneTweets(rawText, toneProfile, session!.access_token);
-      const normalizedShort = [...res.short_tweets.slice(0, 4)];
-      while (normalizedShort.length < 4) normalizedShort.push('');
-      const normalizedLong = [...res.long_tweets.slice(0, 4)];
-      while (normalizedLong.length < 4) normalizedLong.push('');
-      const normalizedThreads = [...res.threads.slice(0, 2)];
-      while (normalizedThreads.length < 2) normalizedThreads.push(['', '', '']);
-      normalizedThreads.forEach((t, idx) => {
-        if (t.length < 3) normalizedThreads[idx] = [...t, '', ''];
-      });
-      setShortTweets(normalizedShort);
-      setLongTweets(normalizedLong);
-      setThreads(normalizedThreads);
-      setStatusMessage('Tweets ready. Adjust tone to regenerate.');
-    } catch (err) {
-      console.error(err);
-      setStatusMessage('Generation failed.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleUpload = async ({ text }: { text?: string }) => {
     if (!text || !session) return;
-    setNoteContent(text);
     try {
       setLoading(true);
       setMicroStatus(0);
-      const toneResult = await analyzeTone(text, session.access_token);
-      setTone(toneResult);
-      setBaselineLoaded(true);
-      setStatusMessage('Voice analyzed. Generating tweets from your baseline tone…');
-      await runGeneration(text, toneResult);
+      const response = await runPipeline({ note_text: text, include_shitpost: false, session_id: sessionId ?? undefined }, session.access_token);
+      applyPipelineResponse(response);
     } catch (err) {
       console.error(err);
       setStatusMessage('Voice analysis failed.');
@@ -100,37 +80,45 @@ const AppPage = () => {
       setStatusMessage('Sign in to generate.');
       return;
     }
-    if (!noteContent.trim()) {
-      setStatusMessage('Add some notes first.');
+    if (!voiceProfile || angles.length === 0) {
+      setStatusMessage('Run voice analysis first.');
       return;
     }
-    await runGeneration(noteContent, tone);
+    const output = await fetchFreshTweets();
+    if (output) {
+      applyTweetOutput(output);
+      setStatusMessage('Tweets updated with new tone.');
+    }
   };
 
   const regenerateSlot = async (section: 'short' | 'long' | 'thread', index: number) => {
-    if (!session || !noteContent.trim()) return;
-    setLoading(true);
-    setStatusMessage('Regenerating that tweet…');
-    try {
-      const res = await generateToneTweets(noteContent, tone, session.access_token);
-      if (section === 'short') {
-        const next = [...shortTweets];
-        next[index] = res.short_tweets[index] ?? res.short_tweets[0] ?? '';
-        setShortTweets(next);
-      } else if (section === 'long') {
-        const next = [...longTweets];
-        next[index] = res.long_tweets[index] ?? res.long_tweets[0] ?? '';
-        setLongTweets(next);
-      } else {
-        const next = [...threads];
-        next[index] = res.threads[index] ?? res.threads[0] ?? [];
-        setThreads(next);
-      }
-    } catch (err) {
-      console.error(err);
+    const output = await fetchFreshTweets();
+    if (!output) {
       setStatusMessage('Regeneration failed.');
-    } finally {
-      setLoading(false);
+      return;
+    }
+    const paddedShort = padList(output.short_tweets, 4);
+    const paddedLong = padList(output.long_tweets, 4);
+    const paddedThreads = padThreads(output.threads);
+
+    if (section === 'short') {
+      setShortTweets((prev) => {
+        const next = [...prev];
+        next[index] = paddedShort[index] ?? paddedShort[0] ?? '';
+        return next;
+      });
+    } else if (section === 'long') {
+      setLongTweets((prev) => {
+        const next = [...prev];
+        next[index] = paddedLong[index] ?? paddedLong[0] ?? '';
+        return next;
+      });
+    } else {
+      setThreads((prev) => {
+        const next = [...prev];
+        next[index] = paddedThreads[index] ?? paddedThreads[0] ?? ['', '', ''];
+        return next;
+      });
     }
   };
 
@@ -156,6 +144,63 @@ const AppPage = () => {
       if (copy[threadIdx]) copy[threadIdx].splice(tweetIdx, 1);
       return copy;
     });
+  };
+
+  const padList = (items: string[] = [], target = 4) => {
+    const clone = [...items];
+    while (clone.length < target) clone.push('');
+    return clone.slice(0, target);
+  };
+
+  const padThreads = (items: string[][] = []) => {
+    const clone = items.slice(0, 2).map((thread) => {
+      const t = [...thread];
+      while (t.length < 3) t.push('');
+      return t.slice(0, 5);
+    });
+    while (clone.length < 2) clone.push(['', '', '']);
+    return clone;
+  };
+
+  const applyTweetOutput = (output: TweetOutput) => {
+    setShortTweets(padList(output.short_tweets, 4));
+    setLongTweets(padList(output.long_tweets, 4));
+    setThreads(padThreads(output.threads));
+  };
+
+  const applyPipelineResponse = (response: PipelineRunResponse) => {
+    setSessionId(response.session_id);
+    setVoiceProfile(response.voice_profile);
+    setTone(response.voice_profile.tone_scores);
+    setIdeas(response.ideas.ideas);
+    setAngles(response.angles.angles);
+    applyTweetOutput(response.tweets);
+    setBaselineLoaded(true);
+    setStatusMessage('Voice analyzed. Adjust tone sliders or regenerate.');
+  };
+
+  const fetchFreshTweets = async (): Promise<TweetOutput | null> => {
+    if (!session || !voiceProfile || angles.length === 0) {
+      return null;
+    }
+    setLoading(true);
+    setMicroStatus(2);
+    try {
+      const payload = {
+        session_id: sessionId ?? undefined,
+        voice_profile: voiceProfile,
+        ideas: { ideas },
+        angles: { angles },
+        tone_overrides: tone
+      };
+      const response = await regenerateStage('tweets', payload, session.access_token);
+      return response.tweets ?? null;
+    } catch (err) {
+      console.error(err);
+      return null;
+    } finally {
+      setLoading(false);
+    }
   };
 
   const privacyBadge = (

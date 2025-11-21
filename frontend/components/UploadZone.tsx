@@ -68,28 +68,28 @@ const UploadZone = ({ onUpload }: UploadZoneProps) => {
   };
 
   return (
-    <div className="space-y-3 rounded-xl border border-slate-800 bg-slate-900/80 p-6">
+    <div className="space-y-3 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
       <label
         htmlFor="upload"
         onDrop={onDrop}
         onDragOver={(event) => event.preventDefault()}
-        className="flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-slate-700 px-6 py-10 text-center transition hover:border-brand hover:bg-slate-900"
+        className="flex cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-slate-300 px-6 py-10 text-center transition hover:border-[#1d9bf0] hover:bg-slate-50"
       >
-        <span className="text-lg font-semibold text-slate-200">Upload or drop your notes</span>
-        <span className="mt-2 text-sm text-slate-400">Supports .txt or .md up to 50 KB</span>
+        <span className="text-lg font-semibold text-slate-900">Upload or drop your notes</span>
+        <span className="mt-2 text-sm text-slate-500">Supports .txt or .md up to 50 KB</span>
         <input id="upload" name="note-file" type="file" accept=".txt,.md" className="hidden" onChange={onChange} />
       </label>
 
       <textarea
         id="note-text"
         name="note-text"
-        className="w-full rounded-md border border-slate-800 bg-slate-950 p-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-brand focus:outline-none"
+        className="w-full rounded-md border border-slate-200 bg-white p-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[#1d9bf0] focus:outline-none"
         placeholder="Or paste your notes here..."
         rows={4}
         onPaste={onPaste}
       />
 
-      {status && <p className="text-sm text-slate-400">{status}</p>}
+      {status && <p className="text-sm text-slate-500">{status}</p>}
     </div>
   );
 };
